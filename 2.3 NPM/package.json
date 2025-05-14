@@ -8,8 +8,9 @@
   "type": "module",
   "author": "",
   "license": "MIT",
-  "description": "",
   "dependencies": {
     "superheroes": "^4.0.0"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }

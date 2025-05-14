@@ -1,0 +1,14 @@
+{
+  "name": "2.2-native-modules",
+  "version": "1.0.0",
+  "description": "Superheroes module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "superheroes": "^4.0.0"
+  }
+}

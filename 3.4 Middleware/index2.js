@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 
+// Demo of morgan middleware. 
 
 const app = express();
 const port = 3000;

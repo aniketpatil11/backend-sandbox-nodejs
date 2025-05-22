@@ -9,9 +9,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //1. GET a random joke
 app.get("/random", (req, res) => {
-  console.log("hello");
+  // console.log("hello");
   const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
-  console.log(randomJoke);
+  // console.log(randomJoke);
   // res.json converts Javascript object to JSON object
   res.json(randomJoke);
 });
@@ -22,30 +22,104 @@ app.get("/jokes/:id", (req, res) => {
   // when the parameters come they come in string format.
   // So we convert them:
   const jokeId = parseInt(req.params.id);
-  console.log(typeof jokeId);
+  // console.log(typeof jokeId);
   const getJoke = jokes.find((joke) => joke.id === jokeId);
-  console.log(getJoke);
+  // console.log(getJoke);
   res.json(getJoke);
 });
 
 //3. GET a jokes by filtering on the joke type
 app.get("/filter", (req, res) => {
-  console.log(`Printing type from URL : ${req.query}`);
+  // console.log(`Printing type from URL : ${req.query}`);
   const typeOfJoke = req.query.type;
-  console.log(typeOfJoke);
+  // console.log(typeOfJoke);
   const filteredJokes = jokes.filter((joke) => joke.jokeType === typeOfJoke);
-  console.log(filteredJokes);
+  // console.log(filteredJokes);
   res.json(filteredJokes);
 });
 //4. POST a new joke
-
+app.post("/jokes", (req, res) => {
+  console.log(req.body);
+  const getId = jokes[jokes.length - 1];
+  const newId = getId.id + 1;
+  let newJoke = {
+    id: newId,
+    jokeText: req.body.text,
+    jokeType: req.body.type,
+  };
+  jokes.push(newJoke);
+  res.json(newJoke);
+});
 //5. PUT a joke
 
-//6. PATCH a joke
+// app.put("/jokes/:id", (req, res) => {
+//   const jokeId = parseInt(req.params.id);
+//   const getJoke = jokes.find((joke) => joke.id === jokeId);
+//   getJoke.jokeText = req.body.text;
+//   getJoke.jokeType = req.body.type;
+//   // getJoke.jokeText = req.body.text;
+//   // getJoke.jokeType = req.body.type;
+//   res.json(getJoke);
+// });
 
-//7. DELETE Specific joke
+app.put("/jokes/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const replacementJoke = {
+    id: id,
+    jokeText: req.body.text,
+    jokeType: req.body.type,
+  };
 
-//8. DELETE All jokes
+  const searchIndex = jokes.findIndex((joke) => joke.id === id);
+
+  jokes[searchIndex] = replacementJoke;
+  // console.log(jokes);
+  res.json(replacementJoke);
+});
+
+//Patch a joke
+app.patch("/jokes/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const existingJoke = jokes.find((joke) => joke.id === id);
+  const replacementJoke = {
+    id: id,
+    jokeText: req.body.text || existingJoke.jokeText,
+    jokeType: req.body.type || existingJoke.jokeType,
+  };
+  const searchIndex = jokes.findIndex((joke) => joke.id === id);
+  jokes[searchIndex] = replacementJoke;
+  console.log(jokes[searchIndex]);
+  res.json(replacementJoke);
+});
+
+//DELETE Specific joke
+//Optional Edge Case Mangement: Can you think of a situation where we might have an issue deleting
+//a specific joke out of the array? Can you think of a solution?
+app.delete("/jokes/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const searchIndex = jokes.findIndex((joke) => joke.id === id);
+  if (searchIndex > -1) {
+    jokes.splice(searchIndex, 1);
+    res.sendStatus(200);
+  } else {
+    res
+      .status(404)
+      .json({ error: `Joke with id: ${id} not found. No jokes were deleted.` });
+  }
+});
+
+//DELETE All jokes
+app.delete("/all", (req, res) => {
+  const userKey = req.query.key;
+  if (userKey === masterKey) {
+    jokes = [];
+    res.sendStatus(200);
+  } else {
+    res
+      .status(404)
+      .json({ error: `You are not authorised to perform this action.` });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
